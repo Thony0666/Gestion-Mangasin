@@ -63,7 +63,6 @@ class AuthController extends Controller
         JWTAuth::invalidate(JWTAuth::parseToken());
         return response()->json(['message' => 'Successfully logged out']);
     }
-
     public function refresh(): JsonResponse
     {
         $newToken = JWTAuth::refresh(JWTAuth::parseToken());
