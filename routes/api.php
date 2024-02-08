@@ -34,6 +34,9 @@ Route::prefix('supplier')->group(function () {
 Route::prefix('articles')->group(function () {
     Route::get('/', [ArticleController::class, 'getArticles']);
     Route::get('/category', [ArticleController::class, 'getArticlesWithCategory']);
+    Route::post('/articles', [ArticleController::class, 'createArticle']);
+    Route::put('/articles/{article}', [ArticleController::class, 'updateArticle']);
+
 });
 
 /**

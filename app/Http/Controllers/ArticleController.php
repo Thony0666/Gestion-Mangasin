@@ -37,6 +37,25 @@ class ArticleController extends Controller
         ]);
     }
 
+    public function createArticle(CreateArticleRequest $request): JsonResponse
+    {
+        $article = Article::create($request->validated());
+
+        return response()->json([
+            'message' => 'Article created successfully',
+            'article' => new ArticleResource($article),
+        ], Response::HTTP_CREATED);
+    }
+
+    public function updateArticle(UpdateArticleRequest $request, Article $article): JsonResponse
+    {
+        $article->update($request->validated());
+
+        return response()->json([
+            'message' => 'Article updated successfully',
+            'article' => new ArticleResource($article),
+        ]);
+    }
 
     private function filterArticles(Request $request): Builder
     {
