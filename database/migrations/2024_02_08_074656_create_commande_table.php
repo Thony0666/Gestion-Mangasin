@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('achats', function (Blueprint $table) {
+        Schema::create('commandes', function (Blueprint $table) {
             $table->id();
-            $table->date('date_achat');
-            $table->unsignedBigInteger('supplier_id');
-            $table->foreign('supplier_id')->references('id')->on('suppliers');
+            $table->date('date_commande');
+            $table->String('status');
+            $table->unsignedBigInteger('customer_id');
+            $table->foreign('customer_id')->references('id')->on('customers');
             $table->timestamps();
         });
     }
@@ -25,10 +26,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('achats', function (Blueprint $table) {
-            $table->dropForeign(['supplier_id']);
+        Schema::table('commandes', function (Blueprint $table) {
+            $table->dropForeign(['customer_id']);
         });
 
-        Schema::dropIfExists('achats');
+        Schema::dropIfExists('commande');
     }
 };

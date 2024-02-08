@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('commandes', function (Blueprint $table) {
+        Schema::create('achat_ligne', function (Blueprint $table) {
             $table->id();
-            $table->date('date_commande');
-            $table->unsignedBigInteger('customer_id');
-            $table->foreign('customer_id')->references('id')->on('customers');
             $table->timestamps();
         });
     }
@@ -25,10 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('commandes', function (Blueprint $table) {
-            $table->dropForeign(['customer_id']);
-        });
-
-        Schema::dropIfExists('commande');
+        Schema::dropIfExists('achat_ligne');
     }
 };
