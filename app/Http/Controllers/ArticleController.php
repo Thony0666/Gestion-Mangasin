@@ -49,7 +49,7 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function extractDataImage(CreateUserRequest $request, ?Article $article = null): array
+    public function extractData(CreateUserRequest $request, ?Article $article = null): array
     {
         $data = $request->validated();
         $image = $data['image'] ?? null;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\UserController;
+use App\Http\Requests\CreateArticleRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginUserRequest;
 use App\Models\User;
@@ -14,7 +15,9 @@ class AuthController extends Controller
 {
     public function __construct(
         private readonly UserController $controller
-    ){}
+    )
+    {
+    }
 
     public function login(LoginUserRequest $request): JsonResponse
     {
@@ -47,7 +50,6 @@ class AuthController extends Controller
             ], 500);
         }
     }
-
 
     public function respondWithToken($token):JsonResponse
     {
