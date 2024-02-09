@@ -3,21 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateArticleRequest;
-use App\Http\Requests\CreateUserRequest;
 use App\Http\Resources\ArticleResource;
-use App\Http\Resources\UserResource;
 use App\Models\Article;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
 
-    public function getArticles():JsonResponse
+    public function getArticles(): JsonResponse
     {
+        $articles = Article::paginate(10);
+
         return response()->json([
-            'articles' => UserResource::collection(Article::all())
+            'articles' => ArticleResource::collection($articles)
         ]);
     }
 
@@ -27,35 +26,33 @@ class ArticleController extends Controller
 
         if (!$article) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'Article not found',
             ], 404);
         }
 
         return response()->json([
-            'article' => new UserResource($article),
+            'article' => new ArticleResource($article),
         ]);
     }
 
     public function storeOrUpdateArticle(CreateArticleRequest $request, $id = null): JsonResponse
     {
-        if ($id !== null) {
-            $article = Article::findOrFail($id);
-            $article->update($this->extractData($request, $article));
-        } else {
-            $article = article::create($this->extractData($request, new Article()));
-        }
+        $article = $id ? Article::find($id) : new Article();
+        $article->fill($this->extractData($request, $article));
+        $article->save();
+
         return response()->json([
             "article" => new ArticleResource($article)
         ]);
     }
 
-    public function extractData(CreateUserRequest $request, ?Article $article = null): array
+    public function extractData(CreateArticleRequest $request, ?Article $article = null): array
     {
         $data = $request->validated();
         $image = $data['image'] ?? null;
 
-        if ($image instanceof UploadedFile && !$image->getError()) {
-            if ($article->image !== null) {
+        if ($image instanceof \Illuminate\Http\UploadedFile && !$image->getError()) {
+            if ($article && $article->image !== null) {
                 Storage::disk("public")->delete($article->image);
             }
             $data["image"] = $image->store("profiles", "public");
@@ -68,11 +65,10 @@ class ArticleController extends Controller
     public function destroy(int $id): JsonResponse
     {
         $article = Article::find($id);
-        $res = Article::find($id);
 
         if (!$article) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'Article not found',
             ], 404);
         }
 
@@ -83,7 +79,7 @@ class ArticleController extends Controller
         $article->delete();
 
         return response()->json([
-            'article' => new ArticleResource($res),
+            'message' => 'Article deleted successfully',
         ]);
     }
 }
