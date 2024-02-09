@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\category;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +18,7 @@ return new class extends Migration
             $table->string('name',100);
             $table->double('unit_price');
             $table->unsignedInteger('quantity_stock');
-            $table->foreignIdFor(\App\Models\category::class)->constrained();
+            $table->foreignIdFor(category::class)->constrained();
             $table->timestamps();
         });
     }
@@ -29,7 +30,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('articles');
         Schema::table('articles', function (Blueprint $table) {
-            $table->dropForeignIdFor(\App\Models\category::class)->constrained();
+            $table->dropForeignIdFor(category::class)->constrained();
         });
     }
 };

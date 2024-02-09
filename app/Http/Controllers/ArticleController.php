@@ -2,81 +2,88 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateArticleRequest;
+use App\Http\Requests\CreateUserRequest;
 use App\Http\Resources\ArticleResource;
-use App\Http\Resources\ArticleResourceWithCategory;
+use App\Http\Resources\UserResource;
 use App\Models\Article;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
-    public function getArticles(Request $request): JsonResponse
+
+    public function getArticles():JsonResponse
     {
-        $perPage = $request->input('per_page', 10);
-        $articles = $this->filterArticles($request)->paginate($perPage);
         return response()->json([
-            'articles' => ArticleResource::collection($articles)
+            'articles' => UserResource::collection(Article::all())
         ]);
     }
 
-    public function getArticlesWithCategory(Request $request): JsonResponse
+    public function getArticle(int $id): JsonResponse
     {
-        $perPage = $request->input('per_page', 10);
-        $query = $this->filterArticles($request);
-        $categoryName = $request->input('category_name');
-        if ($categoryName !== null) {
-            $query->whereHas('category', function ($query) use ($categoryName) {
-                $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($categoryName) . '%']);
-            });
+        $article = Article::find($id);
+
+        if (!$article) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
         }
 
-        $articles = $query->paginate($perPage);
         return response()->json([
-            'articles' => ArticleResourceWithCategory::collection($articles)
+            'article' => new UserResource($article),
         ]);
     }
 
-    public function createArticle(CreateArticleRequest $request): JsonResponse
+    public function storeOrUpdateArticle(CreateArticleRequest $request, $id = null): JsonResponse
     {
-        $article = Article::create($request->validated());
-
+        if ($id !== null) {
+            $article = Article::findOrFail($id);
+            $article->update($this->extractData($request, $article));
+        } else {
+            $article = article::create($this->extractData($request, new Article()));
+        }
         return response()->json([
-            'message' => 'Article created successfully',
-            'article' => new ArticleResource($article),
-        ], Response::HTTP_CREATED);
-    }
-
-    public function updateArticle(UpdateArticleRequest $request, Article $article): JsonResponse
-    {
-        $article->update($request->validated());
-
-        return response()->json([
-            'message' => 'Article updated successfully',
-            'article' => new ArticleResource($article),
+            "article" => new ArticleResource($article)
         ]);
     }
 
-    private function filterArticles(Request $request): Builder
+    public function extractDataImage(CreateUserRequest $request, ?Article $article = null): array
     {
-        $minPrice = $request->input('min_price');
-        $maxPrice = $request->input('max_price');
-        $name = $request->input('name');
-        $query = Article::with('category');
+        $data = $request->validated();
+        $image = $data['image'] ?? null;
 
-        if ($minPrice !== null) {
-            $query->where('unit_price', '>=', $minPrice);
+        if ($image instanceof UploadedFile && !$image->getError()) {
+            if ($article->image !== null) {
+                Storage::disk("public")->delete($article->image);
+            }
+            $data["image"] = $image->store("profiles", "public");
         }
 
-        if ($maxPrice !== null) {
-            $query->where('unit_price', '<=', $maxPrice);
+        return $data;
+    }
+
+
+    public function destroy(int $id): JsonResponse
+    {
+        $article = Article::find($id);
+        $res = Article::find($id);
+
+        if (!$article) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
         }
 
-        if ($name !== null) {
-            $query->whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($name) . '%']);
+        if ($article->image) {
+            Storage::disk("public")->delete($article->image);
         }
 
-        return $query;
+        $article->delete();
+
+        return response()->json([
+            'article' => new ArticleResource($res),
+        ]);
     }
 }
-

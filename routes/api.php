@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -31,13 +32,14 @@ Route::prefix('supplier')->group(function () {
     Route::delete('/delete/{id}', [SupplierController::class, 'destroy'])->where(['id' => '[0-9]+']);
 });
 
-Route::prefix('articles')->group(function () {
-    Route::get('/', [ArticleController::class, 'getArticles']);
-    Route::get('/category', [ArticleController::class, 'getArticlesWithCategory']);
-    Route::post('/articles', [ArticleController::class, 'createArticle']);
-    Route::put('/articles/{article}', [ArticleController::class, 'updateArticle']);
-
+Route::prefix('article')->group(function () {
+    Route::get('/all', [ArticleController::class, 'getArticles']);
+    Route::get('/{id}', [ArticleController::class, 'getArticle'])->where(['id' => '[0-9]+']);
+    Route::post('/crup/{id?}', [ArticleController::class, 'storeOrUpdateArticle'])->where('id', '[0-9]*');;
+    Route::delete('/delete/{id}', [ArticleController::class, 'destroy'])->where(['id' => '[0-9]+']);
 });
+
+
 
 /**
  * Authenticated routes

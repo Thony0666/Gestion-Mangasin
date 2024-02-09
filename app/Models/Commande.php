@@ -13,6 +13,7 @@ class Commande extends Model
 
     protected $fillable = [
         'order_date',
+        'status',
         'customer_id',
     ];
 
