@@ -7,16 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Commande extends Model
+class Order extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'order_date',
-        'status',
         'customer_id',
     ];
 
+
+    public function formatDateToTimestamp($dateTimeString): string
+    {
+        $timestamp = strtotime($dateTimeString);
+        return date('Y-m-d H:i:s', $timestamp);
+    }
 
     public function customer(): BelongsTo
     {

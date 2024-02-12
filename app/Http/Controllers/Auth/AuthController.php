@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\UserController;
-use App\Http\Requests\CreateArticleRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginUserRequest;
 use App\Models\User;
@@ -15,9 +14,7 @@ class AuthController extends Controller
 {
     public function __construct(
         private readonly UserController $controller
-    )
-    {
-    }
+    ){}
 
     public function login(LoginUserRequest $request): JsonResponse
     {
@@ -35,12 +32,9 @@ class AuthController extends Controller
 
     public function register(CreateUserRequest $request): JsonResponse
     {
-        $data = $request->validated();
-
-        $user = User::create($this->controller->extractData($request));
+        $user = User::create($this->controller->extractData($request, new User()));
 
         if ($user) {
-            // $token = auth()->login($user);
             $token = JWTAuth::fromUser($user);
             return $this->respondWithToken($token);
         } else {
@@ -50,6 +44,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
 
     public function respondWithToken($token):JsonResponse
     {
@@ -65,10 +60,10 @@ class AuthController extends Controller
         JWTAuth::invalidate(JWTAuth::parseToken());
         return response()->json(['message' => 'Successfully logged out']);
     }
+
     public function refresh(): JsonResponse
     {
         $newToken = JWTAuth::refresh(JWTAuth::parseToken());
-        $user = auth()->user();
         return $this->respondWithToken($newToken);
     }
 

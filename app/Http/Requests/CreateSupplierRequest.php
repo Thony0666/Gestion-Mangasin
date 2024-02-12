@@ -22,8 +22,8 @@ class CreateSupplierRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp',
             'name' => 'required|string|max:100',
-            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg',
             'email' => 'required|email|max:100',
             'address' => 'nullable|string',
             'city' => 'nullable|string|max:150',

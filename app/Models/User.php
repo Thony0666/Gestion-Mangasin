@@ -20,13 +20,12 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
+        'username',
         'image',
         'first_name',
-        'phone_number',
         'last_name',
-        'username',
         'email',
-        'user_type',
+        'phone_number',
         'address',
         'city',
         'role',
@@ -53,6 +52,11 @@ class User extends Authenticatable implements JWTSubject
         'password' => 'hashed',
     ];
 
+    public function formatDateToTimestamp($dateTimeString): string
+    {
+        $timestamp = strtotime($dateTimeString);
+        return date('Y-m-d H:i:s', $timestamp);
+    }
 
     public function getJWTIdentifier()
     {
@@ -80,5 +84,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return Storage::disk('public')->url($this->image);
     }
+
 
 }

@@ -13,6 +13,7 @@ class Article extends Model
     use HasFactory;
 
     protected $fillable = [
+        'description',
         'image',
         'name',
         'unit_price',
@@ -20,6 +21,12 @@ class Article extends Model
         'category_id',
     ];
 
+
+    public function formatDateToTimestamp($dateTimeString): string
+    {
+        $timestamp = strtotime($dateTimeString);
+        return date('Y-m-d H:i:s', $timestamp);
+    }
 
     public function category(): BelongsTo
     {
@@ -47,8 +54,11 @@ class Article extends Model
         return $this->hasMany(DeliveryDetail::class);
     }
 
-    public function imageUrl(): string
+    public function imageUrl(): ?string
     {
-        return Storage::disk('public')->url($this->image);
+        if ($this->image !== null){
+            return Storage::disk('public')->url($this->image);
+        }
+        return null;
     }
 }

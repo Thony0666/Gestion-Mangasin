@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class LigneCommande extends Model
+class OrderLine extends Model
 {
     use HasFactory;
 
@@ -16,6 +16,12 @@ class LigneCommande extends Model
         'selling_price',
         'quantity',
     ];
+
+    public function formatDateToTimestamp($dateTimeString): string
+    {
+        $timestamp = strtotime($dateTimeString);
+        return date('Y-m-d H:i:s', $timestamp);
+    }
 
     public function article(): BelongsTo
     {

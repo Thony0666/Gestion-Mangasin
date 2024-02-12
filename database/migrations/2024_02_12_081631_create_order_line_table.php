@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Article;
-use App\Models\Commande;
+use App\Models\Order;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ligne_commande', function (Blueprint $table) {
+        Schema::create('order_lines', function (Blueprint $table) {
             $table->id();
             $table->integer('selling_price')->default(0);
             $table->integer('quantity')->unsigned();
-            $table->foreignIdFor(commande::class)->constrained()
+            $table->foreignIdFor(Order::class)->constrained()
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
             $table->foreignIdFor(Article::class)->constrained()
@@ -32,10 +32,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('ligne_commande', function (Blueprint $table) {
-            $table->dropForeignIdFor(Commande::class);
+        Schema::table('order_lines', function (Blueprint $table) {
+            $table->dropForeignIdFor(Order::class);
             $table->dropForeignIdFor(Article::class);
         });
-        Schema::dropIfExists('ligne_commande');
+        Schema::dropIfExists('order_lines');
     }
 };

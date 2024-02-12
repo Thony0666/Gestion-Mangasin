@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\category;
+use App\Models\Category;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,11 +14,14 @@ return new class extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
-            $table->string('image');
-            $table->string('name',100);
-            $table->double('unit_price');
-            $table->unsignedInteger('quantity_stock');
-            $table->foreignIdFor(category::class)->constrained();
+            $table->longText('description')->nullable();
+            $table->string('image', 2000)->nullable();
+            $table->string('name', 20);
+            $table->double('unit_price', 10, 2)->nullable(false);
+            $table->integer('quantity_stock')->default(0)->nullable(false);
+            $table->foreignIdFor(Category::class)->constrained()
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -28,9 +31,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('articles');
+
         Schema::table('articles', function (Blueprint $table) {
-            $table->dropForeignIdFor(category::class)->constrained();
+            $table->dropForeignIdFor(Category::class);
         });
+        Schema::dropIfExists('articles');
     }
 };

@@ -22,11 +22,12 @@ class CreateArticleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'name' => 'required|string|max:255',
+            'name' => 'required|string',
             'unit_price' => 'required|numeric|min:0',
-            'quantity_stock' => 'required|integer|min:0',
+            'quantity_stock' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,svg,webp',
         ];
+
     }
 }

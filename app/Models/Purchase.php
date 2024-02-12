@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Achat extends Model
+class Purchase extends Model
 {
     use HasFactory;
 
@@ -15,6 +15,12 @@ class Achat extends Model
         'purchase_date',
         'supplier_id',
     ];
+
+    public function formatDateToTimestamp($dateTimeString): string
+    {
+        $timestamp = strtotime($dateTimeString);
+        return date('Y-m-d H:i:s', $timestamp);
+    }
 
     public function supplier(): BelongsTo
     {

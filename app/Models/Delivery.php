@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Livraison extends Model
+class Delivery extends Model
 {
     use HasFactory;
 
@@ -15,6 +15,12 @@ class Livraison extends Model
         'delivery_address',
     ];
 
+
+    public function formatDateToTimestamp($dateTimeString): string
+    {
+        $timestamp = strtotime($dateTimeString);
+        return date('Y-m-d H:i:s', $timestamp);
+    }
 
     public function deliveryDetails(): HasMany
     {
